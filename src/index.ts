@@ -16,12 +16,12 @@ import {cloneTemplate, ensureElement} from "./utils/utils";
 const events = new EventEmitter();
 const api = new ShopAPI(CDN_URL, API_URL);
 
-// Чтобы мониторить все события, для отладки
+/** Чтобы мониторить все события, для отладки */
 events.onAll(({eventName, data}) => {
   console.log(eventName, data);
 })
 
-// Все шаблоны
+/** Все шаблоны */
 const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
 const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
@@ -30,10 +30,10 @@ const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 
-// Модель данных приложения
+/** Модель данных приложения */
 const appData = new AppState({}, events);
 
-// Глобальные контейнеры
+/** Глобальные контейнеры */
 const page = new Page(document.body, events);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
 
@@ -41,6 +41,7 @@ const basket = new Basket(cloneTemplate(basketTemplate), events);
 const order = new Order(cloneTemplate(orderTemplate), events);
 const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
 
+/** Вывод карточек на страницу */
 events.on<GalleryChangeEvent>('items:changed', () => {
   page.gallery = appData.catalog.map(item => {
     const card = new CatalogArticle(cloneTemplate(cardCatalogTemplate), {
@@ -58,7 +59,7 @@ events.on<GalleryChangeEvent>('items:changed', () => {
   page.counter = appData.getBasketArticles().length;
 });
 
-// Изменилось состояние валидации формы
+/** Изменилось состояние валидации формы */
 events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
 	const {email, phone, address, payment} = errors;
 	order.valid = !address && !payment;
@@ -67,11 +68,12 @@ events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
 	contacts.errors = Object.values({phone, email}).filter(i => !!i).join('; ');
 });
 
-// Изменилось одно из полей 
+/** Изменилось одно из полей */
 events.on(/^input\..*:change/, (data: {field: keyof IOrderForm, value: string}) => {
 	appData.setOrderField(data.field, data.value);
 });
 
+/** Изменился способ оплаты */
 events.on('payment:change', (data: {payment: string}) => {
 	appData.setOrderField('payment', data.payment);
 })
@@ -125,12 +127,12 @@ events.on('contacts:submit', () => {
 		})
 })
 
-// Открыть лот
+/** Открыть лот */
 events.on('card:select', (item: CatalogItem) => {
     appData.setPreview(item);
 });
 
-// Изменен открытый выбранный лот
+/** Изменен открытый выбранный лот */
 events.on('preview:changed', (item: CatalogItem) => {
   const showItem = (item: CatalogItem) => {
     const card = new CatalogArticle(cloneTemplate(cardPreviewTemplate), {
@@ -202,6 +204,7 @@ events.on('card:editbasket', (item: CatalogItem) => {
 	page.counter = appData.getBasketArticles().length;
 });
 
+/** */
 events.on('basket:delete', (item: CatalogItem) => {
   item.inBasket = false;
 	appData.toggleBasketArticle(item.id, false);
@@ -209,6 +212,7 @@ events.on('basket:delete', (item: CatalogItem) => {
   events.emit('basket:open');
 })
 
+/** */
 events.on('basket:open', () => {
   appData.basket = appData.getBasketArticles().map((item, index) => {
     const card = new CatalogArticle(cloneTemplate(cardBasketTemplate), {
@@ -229,17 +233,17 @@ events.on('basket:open', () => {
 	})
 });
 
-// Блокируем прокрутку страницы если открыта модалка
+/** Блокируем прокрутку страницы если открыта модалка */
 events.on('modal:open', () => {
   page.locked = true;
 });
 
-// ... и разблокируем
+/** ... и разблокируем */
 events.on('modal:close', () => {
   page.locked = false;
 });
 
-
+/**Запрос на получение карточек */
 api.getArticleList()
 	.then((data: ApiListResponse<Iarticle>) => 
 	{const gallery = data.items.map((item) => ({
