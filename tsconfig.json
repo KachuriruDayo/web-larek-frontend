@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "./dist",
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
     "module": "es6",
@@ -9,4 +10,7 @@
     "moduleResolution": "node",
   },
   //"include": ["src/index.ts", "src/types/*.d.ts"]
+  "exclude": [
+    "./dist/**/*" 
+  ]
 }

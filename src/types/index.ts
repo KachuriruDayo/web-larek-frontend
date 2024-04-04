@@ -1,45 +1,54 @@
+export type ApiListResponse<Type> = {
+	total: number;
+	items: Type[];
+};
+
 export interface IShopAPI {
-  getArticleList: () => Promise<object>;
-  getArticleItem: (id: string) => Promise<object>;
-  orderArticles: (order: IorderData) => Promise<object>;
+	getArticleList: () => Promise<IArticle[]>;
+	orderArticles: (order: IOrderData) => Promise<IOrderResult>;
 }
-export interface Iarticle {
-  id: string;
-  description: string;
-  image: string;
-  title: string;
-  category: string;
-  price: number;
-  inBusket: boolean;
+
+interface IArticleAdded {
+	index: number;
+	inBusket: boolean;
+}
+
+export interface IArticle extends IArticleAdded {
+	id: string;
+	description: string;
+	image: string;
+	title: string;
+	category: string;
+	price: number | null;
 }
 
 export interface IBasket {
-  articles: HTMLElement[];
-  total: number;
+	articles: HTMLElement[];
+	total: number;
 }
 
 export interface IAppState {
-  catalog: Iarticle[];
-  basket: string[];
-  preview: string | null;
-  order: IorderData | null;
+	catalog: IArticle[];
+	basket: string[];
+	preview: string | null;
+	order: IOrderData | null;
 }
 
 export interface IOrderForm {
-  payment: string;
-  address: string;
-  email: string;
-  phone: string;
+	payment: string;
+	address: string;
+	email: string;
+	phone: string;
 }
 
-export type FormErrors = Partial<Record<keyof IorderData, string>>;
+export type FormErrors = Partial<Record<keyof IOrderData, string>>;
 
 export interface IOrderResult {
-  total: number;
-  id: string;
+	total: number;
+	id: string;
 }
 
-export interface IorderData extends IOrderForm{
-  total: number;
-  items: string[];
+export interface IOrderData extends IOrderForm {
+	total: number;
+	items: string[];
 }
