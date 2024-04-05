@@ -8,18 +8,18 @@ export interface IShopAPI {
 	orderArticles: (order: IOrderData) => Promise<IOrderResult>;
 }
 
-interface IArticleAdded {
-	index: number;
-	inBusket: boolean;
-}
-
-export interface IArticle extends IArticleAdded {
+interface IArticleData {
 	id: string;
 	description: string;
 	image: string;
 	title: string;
 	category: string;
 	price: number | null;
+}
+
+export interface IArticle extends IArticleData {
+	index: number;
+	inBusket: boolean;
 }
 
 export interface IBasket {

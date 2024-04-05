@@ -34,14 +34,7 @@ export class AppState extends Model<IAppState> {
 	catalog: CatalogItem[];
 	basket: HTMLElement[] = [];
 	preview: string | null;
-	order: IOrderData = {
-		payment: '',
-		address: '',
-		email: '',
-		phone: '',
-		total: 0,
-		items: [],
-	};
+	order: IOrderData = orderDefault;
 	formErrors: FormErrors = {};
 
 	setCatalog(items: IArticle[]) {
